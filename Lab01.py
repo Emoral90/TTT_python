@@ -127,3 +127,10 @@ print(" 7 | 8 | 9 \n")
 print("The current board is:")
 
 # The file read code, game loop code, and file close code goes here.
+if __name__ == "__main__":
+    filename = 'tic_tac_toe.json'
+    current_board = read_board(filename)
+    while True:
+        if not play_game(current_board):
+            current_board = blank_board['board']  # Reset for a new game
+            save_board(filename, current_board)
