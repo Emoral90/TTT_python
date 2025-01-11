@@ -29,25 +29,50 @@ blank_board = {
 
 def read_board(filename):
     '''Read the previously existing board from the file if it exists.'''
-    # Put file reading code here.
-    return blank_board['board']
+    try:
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            return data['board']
+    except (FileNotFoundError, json.JSONDecodeError):
+        return blank_board['board']
 
 def save_board(filename, board):
     '''Save the current game to a file.'''
-    # Put file writing code here.
+    with open(filename, 'w') as file:
+        json.dump({"board": board}, file)
 
 def display_board(board):
     '''Display a Tic-Tac-Toe board on the screen in a user-friendly way.'''
-    # Put display code here.
+    for row in range(3):
+        print(f" {board[row * 3]} | {board[row * 3 + 1]} | {board[row * 3 + 2]} ")
+        if row < 2:
+            print("---+---+---")
 
 def is_x_turn(board):
     '''Determine whose turn it is.'''
-    # Put code here determining if it is X's turn.
-    return True
+    x_count = board.count(X)
+    o_count = board.count(O)
+    return x_count == o_count
 
 def play_game(board):
     '''Play the game of Tic-Tac-Toe.'''
-    # Put game play code here. Return False when the user has indicated they are done.
+    while not game_done(board, True):
+        display_board(board)
+        turn = X if is_x_turn(board) else O
+        move = input(f"Player {turn}, choose a position (1-9) or 'q' to quit: ")
+        if move.lower() == 'q':
+            print("Game saved.")
+            return True
+        if move.isdigit():
+            pos = int(move) - 1
+            if 0 <= pos < 9 and board[pos] == BLANK:
+                board[pos] = turn
+                save_board('tic_tac_toe.json', board)
+            else:
+                print("Invalid move. Try again.")
+        else:
+            print("Invalid input. Try again.")
+    print("Game over.")
     return False
 
 def game_done(board, message=False):
